@@ -1,4 +1,10 @@
 const nodemailer = require('nodemailer');
+const dns = require('dns');
+
+// Force Node.js to use IPv4 for DNS resolution. 
+// This fixes the 'ENETUNREACH 2607:f8b0:...' error on Render containers
+// that don't have outbound IPv6 routing enabled.
+dns.setDefaultResultOrder('ipv4first');
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
