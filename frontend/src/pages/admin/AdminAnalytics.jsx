@@ -53,9 +53,9 @@ export default function AdminAnalytics() {
       </div>
 
       {stats.recentOrders?.length > 0 && (
-        <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+        <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', overflowX: 'auto' }}>
           <h3 style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 16, color: '#1b1b1b' }}>Recent Orders</h3>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table style={{ minWidth: 600, width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #eee' }}>
                 {['Order', 'Customer', 'Amount', 'Status'].map(h => (

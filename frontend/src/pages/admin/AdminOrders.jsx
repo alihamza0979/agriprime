@@ -98,8 +98,8 @@ export default function AdminOrders() {
         </select>
       </div>
 
-      <div style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div style={{ background: '#fff', borderRadius: 12, overflowX: 'auto', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+        <table style={{ minWidth: 800, width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#f5fced' }}>
               {['Order #', 'Customer', 'Items', 'Amount', 'Payment', 'Status', 'Actions'].map(h => (
