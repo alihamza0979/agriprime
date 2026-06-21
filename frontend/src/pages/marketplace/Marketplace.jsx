@@ -32,6 +32,7 @@ export default function Marketplace() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
   const [toast, setToast] = useState(null);
   const { addToCart, cartCount } = useCart();
 
@@ -69,6 +70,20 @@ export default function Marketplace() {
 
   const scrollToProducts = () => {
     document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSubscribe = async () => {
+    if (!newsletterEmail) {
+      setToast({ message: 'Please enter an email', type: 'error' });
+      return;
+    }
+    try {
+      const res = await api.post('/newsletter/subscribe', { email: newsletterEmail });
+      setToast({ message: res.data.message || 'Thanks for subscribing!', type: 'success' });
+      setNewsletterEmail('');
+    } catch (err) {
+      setToast({ message: err.response?.data?.message || 'Failed to subscribe', type: 'error' });
+    }
   };
 
   return (
@@ -280,8 +295,14 @@ export default function Marketplace() {
           <h2 className="text-3xl font-bold text-white mb-4 font-headline">Join the AgriPrime Community</h2>
           <p className="text-white/60 mb-8">Get exclusive offers, farming tips, and early access to new products.</p>
           <div className="flex gap-3 max-w-md mx-auto">
-            <input type="email" placeholder="Enter your email" className="flex-1 px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-green-500" />
-            <button onClick={() => setToast({ message: 'Thanks for subscribing!', type: 'success' })} className="px-6 py-3 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-colors">
+            <input 
+              type="email" 
+              placeholder="Enter your email" 
+              value={newsletterEmail}
+              onChange={(e) => setNewsletterEmail(e.target.value)}
+              className="flex-1 px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-green-500" 
+            />
+            <button onClick={handleSubscribe} className="px-6 py-3 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-colors">
               Subscribe
             </button>
           </div>

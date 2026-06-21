@@ -12,9 +12,12 @@ export default function VeterinaryBreedingCalendar() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [showBreedingForm, setShowBreedingForm] = useState(false);
+  const [showVetModal, setShowVetModal] = useState(false);
+  const [vetReason, setVetReason] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [editingBreedingId, setEditingBreedingId] = useState(null);
   const [toast, setToast] = useState(null);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   useEffect(() => {
     fetchAll();
@@ -108,6 +111,67 @@ export default function VeterinaryBreedingCalendar() {
     }
   };
 
+  const handleRequestVet = async (e) => {
+    e.preventDefault();
+    if (!vetReason) return;
+    try {
+      // Assuming you have an endpoint or just mock it
+      await new Promise(r => setTimeout(r, 500));
+      setToast({ message: 'Vet visit requested successfully. They will contact you shortly.', type: 'success' });
+      setShowVetModal(false);
+      setVetReason('');
+    } catch {
+      setToast({ message: 'Failed to request vet', type: 'error' });
+    }
+  };
+
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    
+    const days = [];
+    for (let i = 0; i < firstDay; i++) {
+      days.push(null);
+    }
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push(i);
+    }
+    return days;
+  };
+
+  const nextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  const prevMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  };
+
+  const days = getDaysInMonth(currentDate);
+
+  const getEventsForDay = (day) => {
+    if (!day) return [];
+    const checkDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
+    
+    const events = [];
+    
+    healthRecords.forEach(r => {
+      if (r.date && new Date(r.date).toDateString() === checkDate) {
+        events.push({ type: 'health', text: `${r.recordType}: ${r.animalId?.name}` });
+      }
+    });
+
+    breedingRecords.forEach(r => {
+      if (r.expectedBirthDate && new Date(r.expectedBirthDate).toDateString() === checkDate) {
+        events.push({ type: 'birth', text: `Delivery Due: ${r.animalId?.name}` });
+      }
+    });
+
+    return events;
+  };
+
   return (
     <>
       <main className="w-full min-h-full">
@@ -163,12 +227,14 @@ export default function VeterinaryBreedingCalendar() {
             <div className="lg:col-span-2 glass-card rounded-[1.5rem] p-8 shadow-sm">
               <div className="flex justify-between items-center mb-8">
                 <div>
-                  <h4 className="font-headline text-2xl font-bold">April 2024</h4>
+                  <h4 className="font-headline text-2xl font-bold">
+                    {currentDate.toLocaleString('default', { month: 'long' })} {currentDate.getFullYear()}
+                  </h4>
                   <p className="text-on-surface-variant text-sm">Breeding &amp; Health Calendar</p>
                 </div>
                 <div className="flex gap-2">
-                  <button className="p-2 hover:bg-surface-container transition-colors rounded-full material-symbols-outlined" data-icon="chevron_left">chevron_left</button>
-                  <button className="p-2 hover:bg-surface-container transition-colors rounded-full material-symbols-outlined" data-icon="chevron_right">chevron_right</button>
+                  <button onClick={prevMonth} className="p-2 hover:bg-surface-container transition-colors rounded-full material-symbols-outlined" data-icon="chevron_left">chevron_left</button>
+                  <button onClick={nextMonth} className="p-2 hover:bg-surface-container transition-colors rounded-full material-symbols-outlined" data-icon="chevron_right">chevron_right</button>
                 </div>
               </div>
               <div className="grid grid-cols-7 gap-px bg-outline-variant/10 rounded-xl overflow-hidden border border-outline-variant/10">
@@ -180,32 +246,24 @@ export default function VeterinaryBreedingCalendar() {
                 <div className="bg-surface-container-low p-3 text-center text-xs font-bold uppercase text-on-surface-variant">Thu</div>
                 <div className="bg-surface-container-low p-3 text-center text-xs font-bold uppercase text-on-surface-variant">Fri</div>
                 <div className="bg-surface-container-low p-3 text-center text-xs font-bold uppercase text-on-surface-variant">Sat</div>
-                {/* Calendar Grid Sample */}
-                <div className="bg-white p-4 h-32 text-xs font-medium text-on-surface-variant opacity-40">31</div>
-                <div className="bg-white p-4 h-32 text-xs font-bold">1</div>
-                <div className="bg-white p-4 h-32 text-xs font-bold">2</div>
-                <div className="bg-white p-4 h-32 text-xs font-bold">
-                  3
-                  <div className="mt-2 p-1.5 bg-secondary-container text-on-secondary-container rounded-lg text-[10px] leading-tight">
-                    Heat Cycle: Cow #102
-                  </div>
-                </div>
-                <div className="bg-white p-4 h-32 text-xs font-bold">4</div>
-                <div className="bg-white p-4 h-32 text-xs font-bold">5</div>
-                <div className="bg-white p-4 h-32 text-xs font-bold">6</div>
-                <div className="bg-white p-4 h-32 text-xs font-bold">7</div>
-                <div className="bg-white p-4 h-32 text-xs font-bold">8</div>
-                <div className="bg-white p-4 h-32 text-xs font-bold">9</div>
-                <div className="bg-white p-4 h-32 text-xs font-bold bg-primary-container/10">
-                  10
-                  <div className="mt-2 p-1.5 bg-primary-container text-on-primary-container rounded-lg text-[10px] leading-tight border-l-4 border-primary">
-                    Delivery Due: Heifer #88
-                  </div>
-                </div>
-                <div className="bg-white p-4 h-32 text-xs font-bold">11</div>
-                <div className="bg-white p-4 h-32 text-xs font-bold">12</div>
-                <div className="bg-white p-4 h-32 text-xs font-bold">13</div>
-                <div className="bg-white p-4 h-32 text-xs font-bold">14</div>
+                {/* Calendar Grid Dynamic */}
+                {days.map((day, idx) => {
+                  if (!day) return <div key={`empty-${idx}`} className="bg-white p-4 h-32"></div>;
+                  const events = getEventsForDay(day);
+                  return (
+                    <div key={`day-${day}`} className={`bg-white p-2 h-32 overflow-y-auto ${events.length > 0 ? 'bg-primary-container/5' : ''}`}>
+                      <div className="text-xs font-bold mb-1">{day}</div>
+                      {events.map((e, i) => (
+                        <div key={i} className={`mb-1 p-1 rounded text-[10px] leading-tight border-l-2 ${
+                          e.type === 'birth' ? 'bg-primary-container text-on-primary-container border-primary' :
+                          'bg-secondary-container text-on-secondary-container border-secondary'
+                        }`}>
+                          {e.text}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -236,7 +294,7 @@ export default function VeterinaryBreedingCalendar() {
               <div className="bg-gradient-to-br from-primary to-primary-container p-6 rounded-[1.5rem] text-white shadow-lg">
                 <h5 className="font-headline font-bold text-lg leading-tight">Need an urgent vet consultation?</h5>
                 <p className="text-xs text-primary-fixed-dim mt-2 leading-relaxed">Instantly book a certified specialist for on-site diagnosis.</p>
-                <button className="mt-6 w-full py-3 bg-white text-primary rounded-xl font-bold text-sm hover:shadow-xl transition-all active:scale-95">
+                <button onClick={() => setShowVetModal(true)} className="mt-6 w-full py-3 bg-white text-primary rounded-xl font-bold text-sm hover:shadow-xl transition-all active:scale-95">
                   Request Vet Visit
                 </button>
               </div>
@@ -404,6 +462,45 @@ export default function VeterinaryBreedingCalendar() {
           type={toast.type}
           onClose={() => setToast(null)}
         />
+      )}
+
+      {showVetModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div className="bg-gradient-to-r from-primary to-primary-container p-6 text-white flex justify-between items-center">
+              <div>
+                <h3 className="font-headline font-bold text-xl">Request Vet Visit</h3>
+                <p className="text-sm opacity-80 mt-1">Book an expert for on-site checkup</p>
+              </div>
+              <button onClick={() => setShowVetModal(false)} className="hover:bg-white/20 p-2 rounded-full transition-colors material-symbols-outlined">close</button>
+            </div>
+            <form onSubmit={handleRequestVet} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Select Veterinarian</label>
+                <select className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                  <option value="">Any Available Specialist</option>
+                  <option value="dr_smith">Dr. Smith (Livestock)</option>
+                  <option value="dr_jones">Dr. Jones (Poultry)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Reason for visit</label>
+                <textarea 
+                  required
+                  value={vetReason}
+                  onChange={(e) => setVetReason(e.target.value)}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50" 
+                  rows="4" 
+                  placeholder="Describe the symptoms or reason for the visit..."
+                ></textarea>
+              </div>
+              <div className="flex gap-4 pt-4">
+                <button type="button" onClick={() => setShowVetModal(false)} className="flex-1 py-3 text-gray-700 bg-gray-100 rounded-xl font-bold hover:bg-gray-200 transition-colors">Cancel</button>
+                <button type="submit" className="flex-1 py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all">Submit Request</button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </>
   );

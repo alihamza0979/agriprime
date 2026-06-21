@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const { sendEmail } = require('../services/emailService');
 
 exports.register = async (req, res) => {
     try {
@@ -79,6 +81,76 @@ exports.changePassword = async (req, res) => {
         user.password = await bcrypt.hash(newPassword, 10);
         await user.save();
         res.json({ success: true, message: 'Password updated successfully' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+exports.forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        
+        if (!user) {
+            // Send success even if not found to prevent email enumeration
+            return res.json({ success: true, message: 'If an account with that email exists, a password reset link has been sent.' });
+        }
+
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+        user.resetPasswordToken = hashedToken;
+        user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+        await user.save();
+
+        const resetUrl = `${req.protocol}://${req.get('host').replace('5000', '5173')}/reset-password/${resetToken}`;
+        
+        const message = `
+            <p>You requested a password reset. Please click the link below to set a new password:</p>
+            <a href="${resetUrl}" target="_blank">Reset Password</a>
+            <p>If you didn't request this, please ignore this email.</p>
+            <p>This link will expire in 10 minutes.</p>
+        `;
+
+        try {
+            await sendEmail(user.email, 'AgriPrime Password Reset', message);
+            res.json({ success: true, message: 'If an account with that email exists, a password reset link has been sent.' });
+        } catch (error) {
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpires = undefined;
+            await user.save();
+            return res.status(500).json({ message: 'Email could not be sent' });
+        }
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+exports.resetPassword = async (req, res) => {
+    try {
+        const resetToken = req.params.token;
+        const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+        const user = await User.findOne({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired reset token' });
+        }
+
+        const { password } = req.body;
+        if (!password || password.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+        }
+
+        user.password = await bcrypt.hash(password, 10);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+
+        res.json({ success: true, message: 'Password reset successfully' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

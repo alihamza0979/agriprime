@@ -12,8 +12,12 @@ const CATEGORY_ICONS = {
 export default function AdminCategories() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
-  useEffect(() => {
+  const fetchCategories = () => {
+    setLoading(true);
+
     api.get('/products')
       .then(res => {
         const products = res.data.data || [];
@@ -29,7 +33,26 @@ export default function AdminCategories() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchCategories();
   }, []);
+
+  const handleRename = async () => {
+    if (!newCategoryName.trim() || newCategoryName === editingCategory) {
+      setEditingCategory(null);
+      return;
+    }
+    try {
+      await api.put('/products/category/rename', { oldName: editingCategory, newName: newCategoryName });
+      fetchCategories();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to rename category');
+    } finally {
+      setEditingCategory(null);
+    }
+  };
 
   if (loading) return <div style={{ padding: 40, textAlign: 'center', color: '#666' }}>Loading categories...</div>;
 
@@ -60,7 +83,12 @@ export default function AdminCategories() {
                 </span>
               </div>
               <div>
-                <h3 style={{ fontSize: 18, fontWeight: 'bold', color: '#1b1b1b' }}>{cat.name}</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h3 style={{ fontSize: 18, fontWeight: 'bold', color: '#1b1b1b' }}>{cat.name}</h3>
+                  <button onClick={() => { setEditingCategory(cat.name); setNewCategoryName(cat.name); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>edit</span>
+                  </button>
+                </div>
                 <p style={{ fontSize: 13, color: '#666' }}>{cat.count} product{cat.count !== 1 ? 's' : ''}</p>
               </div>
             </div>
@@ -80,6 +108,31 @@ export default function AdminCategories() {
           </div>
         ))}
       </div>
+
+      {editingCategory && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{ background: '#fff', padding: 24, borderRadius: 12, width: 400 }}>
+            <h3 style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 16 }}>Rename Category</h3>
+            <p style={{ fontSize: 14, color: '#666', marginBottom: 16 }}>
+              This will update the category for all products currently in "{editingCategory}".
+            </p>
+            <input
+              type="text"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #ddd', marginBottom: 20 }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+              <button onClick={() => setEditingCategory(null)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #ddd', background: '#fff', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleRename} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#4caf50', color: '#fff', fontWeight: 'bold', cursor: 'pointer' }}>Rename</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

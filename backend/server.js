@@ -37,6 +37,7 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/attendance', require('./routes/attendanceRoutes'));
 app.use('/api/animal-groups', require('./routes/animalGroupRoutes'));
+app.use('/api/newsletter', require('./routes/newsletterRoutes'));
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

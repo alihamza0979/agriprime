@@ -149,7 +149,7 @@ export default function InventoryFeedControl() {
               </div>
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-primary-container/20 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-primary" data-icon="grass" style={{"fontVariationSettings":"\"FILL\" 1"}}>grass</span>
+                  <span className="material-symbols-outlined text-primary" data-icon="grass" style={{ "fontVariationSettings": "\"FILL\" 1" }}>grass</span>
                 </div>
                 <div>
                   <p className="text-on-surface-variant font-medium text-sm">Total Feed Stock</p>
@@ -165,7 +165,7 @@ export default function InventoryFeedControl() {
             <div className="glass-card p-8 rounded-xl shadow-sm border border-outline-variant/10 flex flex-col justify-between bg-secondary-container/10">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-secondary-container/40 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-secondary" data-icon="warning" style={{"fontVariationSettings":"\"FILL\" 1"}}>warning</span>
+                  <span className="material-symbols-outlined text-secondary" data-icon="warning" style={{ "fontVariationSettings": "\"FILL\" 1" }}>warning</span>
                 </div>
                 <div>
                   <p className="text-on-surface-variant font-medium text-sm">Low Warning Items</p>
@@ -178,7 +178,7 @@ export default function InventoryFeedControl() {
             <div className="glass-card p-8 rounded-xl shadow-sm border border-outline-variant/10 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-tertiary-container/20 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-tertiary" data-icon="alarm" style={{"fontVariationSettings":"\"FILL\" 1"}}>alarm</span>
+                  <span className="material-symbols-outlined text-tertiary" data-icon="alarm" style={{ "fontVariationSettings": "\"FILL\" 1" }}>alarm</span>
                 </div>
                 <div>
                   <p className="text-on-surface-variant font-medium text-sm">Medicine Expiring Soon</p>
@@ -241,7 +241,7 @@ export default function InventoryFeedControl() {
                                   <span>{item.quantityKg}kg</span>
                                 </div>
                                 <div className="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
-                                  <div className={`h-full ${isLow ? 'bg-secondary' : 'bg-primary'} rounded-full`} style={{"width": `${percentage}%`}}></div>
+                                  <div className={`h-full ${isLow ? 'bg-secondary' : 'bg-primary'} rounded-full`} style={{ "width": `${percentage}%` }}></div>
                                 </div>
                               </div>
                             </td>
@@ -270,79 +270,79 @@ export default function InventoryFeedControl() {
                 </table>
               </div>
             </div>
-{/* Diet Planning (Right/Small) */}
-<div className="lg:col-span-4 space-y-6">
-<div className="glass-card rounded-xl p-8 shadow-sm border-l-4 border-primary">
-<h4 className="text-xl font-extrabold font-manrope mb-6">Diet Planning — Animal Groups</h4>
-<div className="space-y-4">
-{animalGroups.length === 0 ? (
-  <p className="text-sm text-on-surface-variant">No animal groups yet. Add a group to plan feed diets.</p>
-) : animalGroups.map(group => (
-<div key={group._id} className="p-4 bg-surface-container-low rounded-xl">
-<div className="flex justify-between items-start mb-3">
-<div>
-<p className="text-sm font-bold">{group.name}</p>
-<p className="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest">{group.species || 'Mixed'} · {group.animalCount} animals</p>
-</div>
-<div className="flex gap-1">
-<button onClick={() => { setEditingGroupId(group._id); setShowGroupForm(true); }} className="text-primary hover:bg-primary/5 p-1 rounded"><span className="material-symbols-outlined text-sm">edit</span></button>
-<button onClick={() => handleDeleteGroup(group._id)} className="text-red-500 hover:bg-red-50 p-1 rounded"><span className="material-symbols-outlined text-sm">delete</span></button>
-</div>
-</div>
-<div className="flex items-center justify-between">
-<div className="flex items-center gap-2">
-<span className="material-symbols-outlined text-tertiary text-lg">grain</span>
-<span className="text-xs font-medium">{group.feedItemName || 'No feed assigned'}</span>
-</div>
-<span className="text-sm font-bold">{group.dailyFeedKg}kg/day</span>
-</div>
-</div>
-))}
-<button onClick={() => { setEditingGroupId(null); setShowGroupForm(true); }} className="w-full py-3 border-2 border-dashed border-outline-variant rounded-xl text-on-surface-variant font-bold text-xs hover:bg-surface-container-high transition-all">
-+ Add Animal Group
-</button>
-</div>
-</div>
-<div className="bg-primary text-white rounded-xl p-8 relative overflow-hidden">
-<div className="relative z-10 space-y-4">
-<h5 className="font-manrope font-extrabold text-lg">Feed Stock Check</h5>
-<p className="text-sm text-primary-fixed/80 leading-relaxed">Check if current feed inventory can support all animal groups for the next 7 days.</p>
-<button onClick={handleAutoAdjust} className="bg-white text-primary px-6 py-2 rounded-full font-bold text-xs active:scale-95 transition-all">
-Check &amp; Adjust
-</button>
-{adjustments && adjustments.length > 0 && (
-<div className="mt-4 space-y-2">
-{adjustments.map((a, i) => (
-<p key={i} className="text-xs bg-white/20 p-2 rounded-lg">{a.recommendation}</p>
-))}
-</div>
-)}
-</div>
-</div>
-</div>
-</div>
-</div>
-</main>
-{/* FAB for quick action */}
-<button onClick={handleAddItem} className="fixed bottom-8 right-8 signature-gradient text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-transform group">
-<span className="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform" data-icon="add_circle">add_circle</span>
-</button>
+            {/* Diet Planning (Right/Small) */}
+            <div className="lg:col-span-4 space-y-6">
+              <div className="glass-card rounded-xl p-8 shadow-sm border-l-4 border-primary">
+                <h4 className="text-xl font-extrabold font-manrope mb-6">Diet Planning — Animal Groups</h4>
+                <div className="space-y-4">
+                  {animalGroups.length === 0 ? (
+                    <p className="text-sm text-on-surface-variant">No animal groups yet. Add a group to plan feed diets.</p>
+                  ) : animalGroups.map(group => (
+                    <div key={group._id} className="p-4 bg-surface-container-low rounded-xl">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <p className="text-sm font-bold">{group.name}</p>
+                          <p className="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest">{group.species || 'Mixed'} · {group.animalCount} animals</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <button onClick={() => { setEditingGroupId(group._id); setShowGroupForm(true); }} className="text-primary hover:bg-primary/5 p-1 rounded"><span className="material-symbols-outlined text-sm">edit</span></button>
+                          <button onClick={() => handleDeleteGroup(group._id)} className="text-red-500 hover:bg-red-50 p-1 rounded"><span className="material-symbols-outlined text-sm">delete</span></button>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-tertiary text-lg">grain</span>
+                          <span className="text-xs font-medium">{group.feedItemName || 'No feed assigned'}</span>
+                        </div>
+                        <span className="text-sm font-bold">{group.dailyFeedKg}kg/day</span>
+                      </div>
+                    </div>
+                  ))}
+                  <button onClick={() => { setEditingGroupId(null); setShowGroupForm(true); }} className="w-full py-3 border-2 border-dashed border-outline-variant rounded-xl text-on-surface-variant font-bold text-xs hover:bg-surface-container-high transition-all">
+                    + Add Animal Group
+                  </button>
+                </div>
+              </div>
+              <div className="bg-primary text-white rounded-xl p-8 relative overflow-hidden">
+                <div className="relative z-10 space-y-4">
+                  <h5 className="font-manrope font-extrabold text-lg">Feed Stock Check</h5>
+                  <p className="text-sm text-primary-fixed/80 leading-relaxed">Check if current feed inventory can support all animal groups for the next 7 days.</p>
+                  <button onClick={handleAutoAdjust} className="bg-white text-primary px-6 py-2 rounded-full font-bold text-xs active:scale-95 transition-all">
+                    Check &amp; Adjust
+                  </button>
+                  {adjustments && adjustments.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      {adjustments.map((a, i) => (
+                        <p key={i} className="text-xs bg-white/20 p-2 rounded-lg">{a.recommendation}</p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      {/* FAB for quick action */}
+      <button onClick={handleAddItem} className="fixed bottom-8 right-8 signature-gradient text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-transform group">
+        <span className="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform" data-icon="add_circle">add_circle</span>
+      </button>
 
       {showGroupForm && (
         <AnimalGroupForm groupId={editingGroupId} onSuccess={() => { setShowGroupForm(false); setEditingGroupId(null); setToast({ message: 'Group saved', type: 'success' }); fetchGroups(); }} onCancel={() => { setShowGroupForm(false); setEditingGroupId(null); }} />
       )}
 
       {showForm && (
-        <InventoryForm 
-          itemId={editingId} 
-          onSuccess={handleFormSuccess} 
+        <InventoryForm
+          itemId={editingId}
+          onSuccess={handleFormSuccess}
           onCancel={() => { setShowForm(false); setEditingId(null); }}
         />
       )}
 
       {toast && (
-        <Toast 
-          message={toast.message} 
+        <Toast
+          message={toast.message}
           type={toast.type}
           onClose={() => setToast(null)}
         />

@@ -78,3 +78,21 @@ exports.searchProducts = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+exports.renameCategory = async (req, res) => {
+    try {
+        const { oldName, newName } = req.body;
+        if (!oldName || !newName) {
+            return res.status(400).json({ message: 'Both oldName and newName are required' });
+        }
+        
+        const result = await Product.updateMany(
+            { category: oldName },
+            { $set: { category: newName } }
+        );
+        
+        res.json({ success: true, message: `Updated ${result.modifiedCount} products to new category ${newName}` });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};

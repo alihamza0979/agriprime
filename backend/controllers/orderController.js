@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const User = require('../models/User');
+const { sendEmail } = require('../services/emailService');
 
 const isAdminRole = (role) => ['admin', 'manager', 'accountant'].includes(role);
 
@@ -57,6 +58,25 @@ exports.createOrder = async (req, res) => {
 
         const order = new Order(payload);
         await order.save();
+
+        // Try sending confirmation email
+        try {
+            if (payload.customer?.email) {
+                const html = `
+                    <h3>Order Confirmation #${order.orderNumber}</h3>
+                    <p>Hi ${payload.customer.name},</p>
+                    <p>Thank you for your order! We've received it and will start processing it soon.</p>
+                    <p><strong>Total Amount:</strong> ₨${order.totalAmount}</p>
+                    <p>You can track your order in your dashboard.</p>
+                    <br/><p>Best regards,<br/>AgriPrime Team</p>
+                `;
+                await sendEmail(payload.customer.email, `Order Confirmation #${order.orderNumber}`, html);
+            }
+        } catch (emailErr) {
+            console.error('Failed to send order email:', emailErr);
+            // Don't fail the order creation if email fails
+        }
+
         res.status(201).json({ success: true, data: order });
     } catch (err) {
         if (err.code === 11000) {
