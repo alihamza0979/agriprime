@@ -1,0 +1,28 @@
+import React, { useState } from 'react';
+
+export default function Toast({ message, type = 'success', duration = 3000, onClose }) {
+  const [visible, setVisible] = React.useState(true);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setVisible(false);
+      onClose?.();
+    }, duration);
+    return () => clearTimeout(timer);
+  }, [duration, onClose]);
+
+  if (!visible) return null;
+
+  const bgColor = {
+    success: 'bg-green-500',
+    error: 'bg-red-500',
+    info: 'bg-blue-500',
+    warning: 'bg-yellow-500'
+  }[type];
+
+  return (
+    <div className={`fixed bottom-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in-up z-50`}>
+      {message}
+    </div>
+  );
+}
