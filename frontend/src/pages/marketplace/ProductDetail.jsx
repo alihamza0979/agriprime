@@ -5,6 +5,8 @@ import Toast from '../../components/Toast';
 import api from '../../api';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
+import CartDrawer from '../../components/CartDrawer';
+import CheckoutModal from '../../components/CheckoutModal';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -17,6 +19,8 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
   const [toast, setToast] = useState(null);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -68,7 +72,7 @@ export default function ProductDetail() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fcfdfa]">
-      <Navigation cartCount={cartCount} />
+      <Navigation cartCount={cartCount} onCartClick={() => setCartOpen(true)} />
       
       <main className="flex-1 py-12 px-6 lg:px-12 max-w-7xl mx-auto w-full">
         <button 
@@ -220,6 +224,37 @@ export default function ProductDetail() {
       <footer className="bg-white border-t border-gray-100 py-8 text-center mt-auto">
         <p className="text-gray-500 text-sm">© 2026 AgriPrime. All rights reserved.</p>
       </footer>
+
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} onCheckout={() => { setCartOpen(false); setCheckoutOpen(true); }} />
+      {checkoutOpen && <CheckoutModal onClose={() => setCheckoutOpen(false)} onSuccess={msg => setToast({ message: msg, type: 'success' })} />}
+
+      {/* Floating Cart Button */}
+      {cartCount > 0 && (
+        <button
+          onClick={() => setCartOpen(true)}
+          style={{
+            position: 'fixed', bottom: 24, right: 24, zIndex: 150,
+            width: 64, height: 64, borderRadius: '50%',
+            background: 'linear-gradient(135deg, #4caf50, #2e7d32)',
+            color: '#fff', border: 'none', cursor: 'pointer',
+            boxShadow: '0 8px 32px rgba(76,175,80,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'transform 0.2s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'}
+          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 28 }}>shopping_cart</span>
+          <span style={{
+            position: 'absolute', top: -4, right: -4,
+            background: '#fff', color: '#4caf50',
+            borderRadius: '50%', width: 24, height: 24,
+            fontSize: 12, fontWeight: 800,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          }}>{cartCount}</span>
+        </button>
+      )}
 
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
