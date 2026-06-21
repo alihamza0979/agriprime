@@ -9,6 +9,10 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendEmail = async (to, subject, html) => {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        console.warn('Email credentials not configured. Skipping email send to:', to);
+        return null;
+    }
     try {
         const mailOptions = {
             from: process.env.EMAIL_USER,
