@@ -33,6 +33,7 @@ export default function Marketplace() {
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [subscribing, setSubscribing] = useState(false);
   const [toast, setToast] = useState(null);
   const { addToCart, cartCount } = useCart();
 
@@ -77,12 +78,15 @@ export default function Marketplace() {
       setToast({ message: 'Please enter an email', type: 'error' });
       return;
     }
+    setSubscribing(true);
     try {
       const res = await api.post('/newsletter/subscribe', { email: newsletterEmail });
       setToast({ message: res.data.message || 'Thanks for subscribing!', type: 'success' });
       setNewsletterEmail('');
     } catch (err) {
       setToast({ message: err.response?.data?.message || 'Failed to subscribe', type: 'error' });
+    } finally {
+      setSubscribing(false);
     }
   };
 
@@ -302,8 +306,8 @@ export default function Marketplace() {
               onChange={(e) => setNewsletterEmail(e.target.value)}
               className="flex-1 px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-green-500" 
             />
-            <button onClick={handleSubscribe} className="px-6 py-3 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-colors">
-              Subscribe
+            <button onClick={handleSubscribe} disabled={subscribing} className="px-6 py-3 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-colors disabled:opacity-50">
+              {subscribing ? 'Subscribing...' : 'Subscribe'}
             </button>
           </div>
         </div>
