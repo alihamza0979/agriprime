@@ -120,9 +120,6 @@ export default function Login() {
               </div>
 
               <div className="flex items-center justify-end mt-2">
-                <Link to="/forgot-password" className="text-sm font-medium text-primary hover:text-white transition-colors">
-                  Forgot your password?
-                </Link>
               </div>
 
               <button

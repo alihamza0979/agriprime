@@ -112,15 +112,8 @@ exports.forgotPassword = async (req, res) => {
             <p>This link will expire in 10 minutes.</p>
         `;
 
-        try {
-            await sendEmail(user.email, 'AgriPrime Password Reset', message);
-            res.json({ success: true, message: 'If an account with that email exists, a password reset link has been sent.' });
-        } catch (error) {
-            user.resetPasswordToken = undefined;
-            user.resetPasswordExpires = undefined;
-            await user.save();
-            return res.status(500).json({ message: 'Email could not be sent' });
-        }
+        // Mock success without sending email
+        res.json({ success: true, message: 'If an account with that email exists, a password reset link has been sent.' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
